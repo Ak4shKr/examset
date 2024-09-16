@@ -1,0 +1,26 @@
+import express from "express";
+import mongoose from "mongoose";
+import adminRoutes from "./routes/adminRoutes.js";
+import { config } from "dotenv";
+config();
+
+const port = process.env.PORT || 5000;
+const mongoURL = process.env.MONGO_URI;
+
+const app = express();
+app.use(express.json());
+
+app.use("/api/admin", adminRoutes);
+
+mongoose
+  .connect(mongoURL)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
