@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import adminRoutes from "./routes/adminRoutes.js";
+import cors from "cors";
 import { config } from "dotenv";
 config();
 
@@ -8,8 +9,15 @@ const port = process.env.PORT || 5000;
 const mongoURL = process.env.MONGO_URI;
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
-
 app.use("/api/admin", adminRoutes);
 
 mongoose
