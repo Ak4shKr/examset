@@ -5,15 +5,29 @@ const AdminSet = () => {
   const [tests, setTests] = useState([]);
   const [selectedTest, setSelectedTest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
+  // Copy link to clipboard
   const handleCopyLink = (testNumber) => {
-    navigator.clipboard.writeText(
-      `http://localhost:5173/user/quiz/${testNumber}`
-    );
-    // alert(`Link copied: http://localhost:5173/test/${testNumber}`);
+    navigator.clipboard.writeText(`http://localhost:5173/user/${testNumber}`);
+    alert(`Link copied: http://localhost:5173/user/${testNumber}`);
   };
 
-  const handledelete = async () => {};
+  const handleDelete = async (testNumber) => {
+    // Functionality for delete
+    const confirmation = window.confirm(
+      "Are you sure you want to delete this test?"
+    );
+    if (!confirmation) {
+      return;
+    }
+    const response = await service.delete(`/admin/delete-test/${testNumber}`);
+    if (response.status === 200) {
+      alert("test deleted successfully");
+      setRefresh(!refresh);
+    }
+  };
+
   const handleView = (test) => {
     setSelectedTest(test);
     setIsModalOpen(true);
@@ -34,65 +48,87 @@ const AdminSet = () => {
       }
     };
     fetchTests();
-  }, []);
+  }, [refresh]);
 
   return (
-    <div>
-      <nav className="bg-green-500 p-4 flex justify-between items-center">
-        <div className="text-white text-xl font-bold">ExamSet</div>
-        <div className="text-white text-lg">Admin Panel</div>
+    <div className="min-h-screen bg-gray-100">
+      {/* Navbar */}
+      <nav className="bg-green-600 sticky top-0 p-4 flex justify-between items-center shadow-md">
+        <div className="text-white text-2xl font-bold">ExamSet</div>
+        <div className="text-white text-lg font-semibold">Admin Panel</div>
         <a
           href="/admin/createtest"
-          className="bg-white text-green-500 px-4 py-2 rounded hover:text-white hover:bg-gray-600"
+          className="bg-white border text-green-600 px-4 py-2 rounded font-semibold hover:bg-green-500 hover:text-white hover:border-blue-500 transition duration-300"
         >
           Create Test
         </a>
       </nav>
-      <div className="p-4">
-        {tests.map((test) => (
-          <div key={test._id} className="border p-4 mt-4 flex justify-between">
-            <h2 className="font-bold">Test Number: {test.testNumber}</h2>
-            <div className="space-x-4">
-              <button
-                onClick={() => handleView(test)}
-                className="hover:text-green-500"
-              >
-                View
-              </button>
-              <button
-                onClick={() => handleCopyLink(test.testNumber)}
-                className="hover:text-blue-500"
-              >
-                Copy the link
-              </button>
-              <button onClick={handledelete} className="hover:text-red-600">
-                Delete
-              </button>
+
+      {/* Main Content */}
+      <div className="p-6">
+        {tests.length > 0 ? (
+          tests.map((test) => (
+            <div
+              key={test._id}
+              className="bg-white p-4 rounded-lg shadow-md mt-4 flex justify-between items-center"
+            >
+              <h2 className="font-bold text-lg text-green-700">
+                Test Number: {test.testNumber}
+              </h2>
+              <div className="space-x-4">
+                <button
+                  onClick={() => handleView(test)}
+                  className="text-green-600 font-semibold hover:text-green-800 transition duration-200"
+                >
+                  View
+                </button>
+                <button
+                  onClick={() => handleCopyLink(test.testNumber)}
+                  className="text-blue-500 font-semibold hover:text-blue-700 transition duration-200"
+                >
+                  Copy Link
+                </button>
+                <button
+                  onClick={() => handleDelete(test.testNumber)}
+                  className="text-red-500 font-semibold hover:text-red-700 transition duration-200"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-gray-500 text-lg">No tests available</p>
+        )}
       </div>
 
+      {/* Modal */}
       {isModalOpen && selectedTest && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded shadow-lg w-1/2 max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-1/2 max-h-screen overflow-y-auto relative">
+            <h2 className="text-2xl font-bold text-green-600 mb-4">
               Test Number: {selectedTest.testNumber}
             </h2>
             {selectedTest.questions.map((question) => (
-              <div key={question._id} className="mb-4">
-                <h3 className="font-bold">{question.question}</h3>
-                <ul className="list-disc pl-5">
+              <div key={question._id} className="mb-6">
+                <h3 className="font-bold text-lg text-gray-800">
+                  {question.question}
+                </h3>
+                <ul className="list-disc pl-5 mt-2">
                   {question.options.map((option, index) => (
-                    <li key={index}>{option}</li>
+                    <li key={index} className="text-gray-700">
+                      {option}
+                    </li>
                   ))}
                 </ul>
-                <p className="font-bold">Answer: {question.answer}</p>
+                <p className="font-semibold text-green-600 mt-2">
+                  Answer: {question.answer}
+                </p>
               </div>
             ))}
             <button
               onClick={handleCloseModal}
-              className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 absolute bottom-4 right-4"
             >
               Close
             </button>

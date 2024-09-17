@@ -41,7 +41,6 @@ export const getTest = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 export const submitQuiz = async (req, res) => {
   try {
     const { testNumber, answers } = req.body;
@@ -52,18 +51,52 @@ export const submitQuiz = async (req, res) => {
       return res.status(404).json({ message: "Test not found" });
     }
 
-    // Calculate the score
+    // Create an array to hold the correct answers and the result
+    const questionAnswers = [];
+    const result = [];
+
+    // Populate the questionAnswers array with the correct answers
+    test.questions.forEach((question) => {
+      questionAnswers.push({
+        questionId: question._id.toString(), // Convert ObjectId to string
+        answer: question.answer.toString(), // Ensure the answer is a string
+      });
+    });
+
+    // Calculate the score and prepare the result
     let score = 0;
-    answers.forEach(({ questionId, answer }) => {
-      const question = test.questions.find(
-        (q) => q._id.toString() === questionId
-      );
-      if (question && question.answer === answer) {
-        score++;
+    questionAnswers.forEach(({ questionId, answer }) => {
+      const userAnswerObj = answers.find((q) => q.questionId === questionId);
+
+      if (userAnswerObj) {
+        const userAnswer = userAnswerObj.answer.toString(); // Ensure user answer is a string
+        const isCorrect = answer === userAnswer;
+
+        // Increment the score if the answer is correct
+        if (isCorrect) {
+          score++;
+        }
+
+        // Push the result for this question
+        result.push({
+          questionId,
+          correctAnswer: answer,
+          userAnswer: userAnswer,
+          isCorrect: isCorrect,
+        });
+      } else {
+        // Handle cases where the user's answer is not found in the provided answers
+        result.push({
+          questionId,
+          correctAnswer: answer,
+          userAnswer: null,
+          isCorrect: false,
+        });
       }
     });
 
-    res.status(200).json({ score });
+    // Send the response with the score and detailed results
+    res.status(200).json({ score, result });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -77,6 +110,20 @@ export const getAllTest = async (req, res) => {
     //   console.log(tests[i].testNumber);
     // }
     res.status(200).json({ tests, message: "All tests fetched successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteTest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const test = await Test.findOne({ testNumber: id });
+    if (!test) {
+      return res.status(404).json({ message: "Test not found" });
+    }
+    await test.deleteOne();
+    res.status(200).json({ message: "Test deleted successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
