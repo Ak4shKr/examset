@@ -11,7 +11,7 @@ const mongoURL = process.env.MONGO_URI;
 const app = express();
 app.use(
   cors({
-    origin: "https://examset-6uaz.vercel.app/", // Your frontend URL
+    origin: "https://examset-6uaz.vercel.app", // Your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
