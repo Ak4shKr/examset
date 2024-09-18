@@ -9,8 +9,10 @@ const AdminSet = () => {
 
   // Copy link to clipboard
   const handleCopyLink = (testNumber) => {
-    navigator.clipboard.writeText(`http://localhost:5173/user/${testNumber}`);
-    alert(`Link copied: http://localhost:5173/user/${testNumber}`);
+    navigator.clipboard.writeText(
+      `https://examset-xkvv.vercel.app/user/${testNumber}`
+    );
+    alert(`Link copied: https://examset-xkvv.vercel.app/user/${testNumber}`);
   };
 
   const handleDelete = async (testNumber) => {

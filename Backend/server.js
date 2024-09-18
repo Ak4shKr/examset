@@ -13,8 +13,8 @@ app.use(
   cors({
     origin: "*", // Your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE"],
-    // credentials: true,
-    // allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
