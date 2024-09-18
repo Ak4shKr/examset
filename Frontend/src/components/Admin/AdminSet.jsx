@@ -65,7 +65,7 @@ const AdminSet = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="p-2">
         {tests.length > 0 ? (
           tests.map((test) => (
             <div
