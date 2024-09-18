@@ -11,10 +11,10 @@ const mongoURL = process.env.MONGO_URI;
 const app = express();
 app.use(
   cors({
-    origin: "https://examset-6uaz.vercel.app", // Your frontend URL
+    origin: "*", // Your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    // credentials: true,
+    // allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
@@ -29,6 +29,6 @@ mongoose
     console.log(err);
   });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
