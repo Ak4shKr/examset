@@ -24,8 +24,8 @@ const Results = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-2">
-      <div className="flex items-center mb-4 p-2 bg-gray-100 w-full">
+    <div className="min-h-screen flex flex-col items-center bg-gray-100">
+      <div className="flex items-center mb-4 p-2 bg-gray-100 w-full sticky top-0 shadow-md ">
         <a
           href="/admin"
           className="text-white bg-green-500 hover:bg-green-600 px-4 py-1 rounded-md"

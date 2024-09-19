@@ -59,8 +59,8 @@ const CreateTest = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-4">
-      <div className="flex justify-between items-center mb-4 p-2 bg-gray-100 ">
+    <div className="min-h-screen bg-gray-100 py-2">
+      <div className="flex justify-between items-center mb-4 p-2 bg-gray-100 sticky top-0 shadow-md">
         <a
           href="/admin"
           className="text-white bg-green-500 hover:bg-green-600 px-4 py-1 rounded-md"
