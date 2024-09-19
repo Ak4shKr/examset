@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import service from "../../httpd/service";
 import { useParams } from "react-router-dom";
 import UserInfo from "./UserInfo";
-import { set } from "mongoose";
 
 const Quiz = () => {
   const [test, setTest] = useState(null); // To store fetched test data
