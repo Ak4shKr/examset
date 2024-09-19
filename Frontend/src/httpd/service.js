@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const service = axios.create({
-  baseURL: "https://examset.onrender.com/api",
+  baseURL: "http://localhost:8000/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
