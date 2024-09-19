@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import service from "../../httpd/service";
 import { useParams } from "react-router-dom";
 import UserInfo from "./UserInfo";
+import { set } from "mongoose";
 
 const Quiz = () => {
   const [test, setTest] = useState(null); // To store fetched test data
@@ -12,15 +13,19 @@ const Quiz = () => {
   const [submitted, setSubmitted] = useState(false);
   const name = sessionStorage.getItem("name");
   const mobile = sessionStorage.getItem("mobile");
+  const [Loading, setLoading] = useState(true);
 
-  // Fetch the test data when component mounts
+  // Fetch the test data when the component mounts
   useEffect(() => {
     const fetchTest = async () => {
       try {
+        setLoading(true);
         const response = await service.get(`/admin/test/${testNumber}`);
         setTest(response.data); // Save test data in state
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching test:", error);
+        setLoading(false);
       }
     };
 
@@ -35,6 +40,30 @@ const Quiz = () => {
     });
   };
 
+  // Save the result after score is updated
+  useEffect(() => {
+    if (submitted && score !== null) {
+      saveResult();
+    }
+  }, [score, submitted]); // Call saveResult when the score changes
+
+  // Save the results to the backend
+  const saveResult = async () => {
+    try {
+      const response = await service.post("/admin/save-result", {
+        name,
+        mobile,
+        testDetails: {
+          testNumber,
+          score,
+        },
+      });
+      console.log("Result saved successfully:", response.data);
+    } catch (error) {
+      console.error("Error saving result:", error);
+    }
+  };
+
   // Submit the quiz and evaluate the result
   const handleSubmitQuiz = async () => {
     const quizAnswers = Object.keys(userAnswers).map((questionId) => ({
@@ -43,32 +72,21 @@ const Quiz = () => {
     }));
 
     try {
+      setLoading(true);
       const response = await service.post("/admin/submit-quiz", {
         testNumber,
         answers: quizAnswers,
       });
       setSubmitted(true);
-      setScore(response.data.score);
+      setScore(response.data.score); // Set the score here
       setFeedback(response.data.result); // Store feedback from the backend
+      setLoading(false);
+      alert("Test submitted successfully!");
     } catch (error) {
       console.error("Error submitting quiz:", error);
+      setLoading(false);
     }
-
-    // try {
-    //   const response = await service.post("/admin/user-info", {
-    //     name,
-    //     mobile,
-    //     testDetails: {
-    //       testNumber,
-    //       score,
-    //     },
-    //   });
-    //   console.log(response.data);
-    // } catch (error) {
-    //   console.error("Error submitting quiz:", error);
-    // }
   };
-
   if (!name || !mobile) {
     return <UserInfo />;
   }
@@ -149,7 +167,7 @@ const Quiz = () => {
                 : "hover:bg-blue-600"
             }`}
           >
-            Submit Quiz
+            {Loading ? "submitting..." : "Submit Quiz"}
           </button>
 
           {score !== null && (

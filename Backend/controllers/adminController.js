@@ -1,4 +1,5 @@
 import Test from "../models/testModel.js";
+import User from "../models/userModel.js";
 
 export const createTest = async (req, res) => {
   try {
@@ -124,6 +125,40 @@ export const deleteTest = async (req, res) => {
     }
     await test.deleteOne();
     res.status(200).json({ message: "Test deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const saveResult = async (req, res) => {
+  try {
+    const { name, mobile, testDetails } = req.body;
+    const user = await User.findOne({ mobile });
+    if (user) {
+      user.testDetails.push(testDetails);
+      await user.save();
+      return res.status(200).json({ message: "Result saved successfully" });
+    }
+    const newUser = new User({
+      name,
+      mobile,
+      testDetails,
+    });
+    await newUser.save();
+    res.status(201).json({ message: "Result saved successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const getAllResults = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      users,
+      usersCount: users.length,
+      message: "All results fetched successfully",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

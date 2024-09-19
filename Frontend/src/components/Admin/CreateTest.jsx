@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import service from "../../httpd/service";
 
 const CreateTest = () => {
-  const [testNumber, setTestNumber] = useState("");
-  const [numQuestions, setNumQuestions] = useState(0);
+  const [numQuestions, setNumQuestions] = useState();
+  const [testNumber, setTestNumber] = useState();
   const [questions, setQuestions] = useState([]);
   const [generated, setGenerated] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleGenerate = (e) => {
     e.preventDefault();
@@ -38,18 +39,21 @@ const CreateTest = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await service.post("/admin/create", {
         testNumber,
         questions,
       });
       setTestNumber("");
-      setNumQuestions(0);
+      setNumQuestions();
       setQuestions([]);
       setGenerated(false);
+      setLoading(false);
       alert("Test saved successfully!");
     } catch (error) {
       console.error("Error saving test:", error);
       setGenerated(false);
+      setLoading(false);
       alert("Failed to save test.");
     }
   };
@@ -73,7 +77,7 @@ const CreateTest = () => {
           className="bg-white p-6 rounded shadow-lg"
         >
           <input
-            type="text"
+            type="number"
             value={testNumber}
             disabled={generated}
             onChange={(e) => setTestNumber(e.target.value)}
@@ -140,8 +144,10 @@ const CreateTest = () => {
                 />
               ))}
               <input
-                type="text"
+                type="number"
                 value={q.answer}
+                max={4}
+                min={1}
                 onChange={(e) =>
                   handleInputChange(index, "answer", e.target.value)
                 }
@@ -155,9 +161,11 @@ const CreateTest = () => {
             <div className="flex justify-center mt-4">
               <button
                 type="submit"
-                className="bg-blue-500 text-white font-semibold py-2 px-6 rounded"
+                className={`bg-blue-500 ${
+                  loading ? "bg-gray-500" : ""
+                } text-white font-semibold py-2 px-6 rounded`}
               >
-                Save Test
+                {loading ? "Saving..." : "Save Test"}
               </button>
             </div>
           )}
