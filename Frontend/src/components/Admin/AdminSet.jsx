@@ -94,7 +94,7 @@ const AdminSet = () => {
               <h2 className="font-bold text-lg text-green-700">
                 Test Number: {test.testNumber}
               </h2>
-              <div className="space-x-4">
+              <div className="space-x-4 text-right">
                 <button
                   onClick={() => handleView(test)}
                   className="text-green-600 font-semibold hover:text-green-800 transition duration-200"
@@ -122,7 +122,7 @@ const AdminSet = () => {
       {/* Modal */}
       {isModalOpen && selectedTest && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-1/2 max-h-screen overflow-y-auto relative">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-[95%] md:w-1/2 max-h-screen overflow-y-auto relative">
             <h2 className="text-2xl font-bold text-green-600 mb-4">
               Test Number: {selectedTest.testNumber}
             </h2>
