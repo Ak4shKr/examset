@@ -65,6 +65,11 @@ const Quiz = () => {
 
   // Submit the quiz and evaluate the result
   const handleSubmitQuiz = async () => {
+    const confirm = window.confirm("Are you sure you want to submit the quiz?");
+    if (!confirm) {
+      return;
+    }
+
     const quizAnswers = Object.keys(userAnswers).map((questionId) => ({
       questionId,
       answer: userAnswers[questionId], // Option number
